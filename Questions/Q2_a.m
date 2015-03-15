@@ -67,16 +67,18 @@ for i=1:nTest
             optionType = -1;
             optionClass = {'put'};
         end
-        volt = blkimpv(stockPrice, strikePrice, intRate, expTime, optionPrice, [], [], optionClass);
-        if (isnan(volt))
-            if (i>1)
-                volt = lastVolt;
-            else
-                volt = calcBSImpVol(optionType, optionPrice, stockPrice, strikePrice, expTime, intRate, 0.05);
-            end
-        end        
-        lastVolt = volt;
-        voltValues(i,j) = volt;
+        
+        % implied volatility is not needed
+        % volt = blkimpv(stockPrice, strikePrice, intRate, expTime, optionPrice, [], [], optionClass);
+        % if (isnan(volt))
+        %     if (i>1)
+        %         volt = lastVolt;
+        %     else
+        %         volt = calcBSImpVol(optionType, optionPrice, stockPrice, strikePrice, expTime, intRate, 0.05);
+        %     end
+        % end
+        % lastVolt = volt;
+        % voltValues(i,j) = volt;
         
         % volatility, this is different than the implied volatility
         sigma = calcVolatility(prices(i:nTrain+i-1, j));

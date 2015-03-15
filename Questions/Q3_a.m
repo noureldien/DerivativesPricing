@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Question 2-a: estimating prices using Black-Scholes model
+% Question 3: volatility vs. implied volatility
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc;
@@ -15,7 +15,8 @@ intRate = 6/100;
 % list of strike prices for all the 5 call options
 % and 5 put options we have
 % note that the strike price is different from the option price
-strikePrices = [2925, 3025, 3125, 3225, 3325, ...
+strikePrices = [...
+    2925, 3025, 3125, 3225, 3325, ...
     2925, 3025, 3125, 3225, 3325];
 
 % neglect the last week as the timeToExpire (in years) becomes to small
@@ -28,19 +29,21 @@ m = length(strikePrices);
 nTrain = int16(n/4);
 nTest = n-nTrain - neglectedDays;
 
-% list of estimated prices of put and call options
-estmPrices = zeros(nTest, m);
+% in this question, we need only random 30 days form
+% the test data
+nSamples = 150;
+testIdx = int16(randperm(nTest, nSamples)) + nTrain;
+testIdx = sort(testIdx);
+nTest = nSamples;
 
 voltValues = zeros(nTest,m);
 sigmaValues = zeros(nTest,m);
-vegaValues = zeros(nTest,m);
-gammaValues = zeros(nTest,m);
-deltaValues = zeros(nTest,m);
 
 % loop on the test data. for each one, calcuate the volatility
 % from train data and estimate the call price and save it
 for i=1:nTest
-    idxCurrent = nTrain +i;
+    
+    idxCurrent = testIdx(i);
     
     % current price of the underlying asset
     stockPrice = stock(idxCurrent);
@@ -67,32 +70,32 @@ for i=1:nTest
             optionType = -1;
             optionClass = {'put'};
         end
-        volt = blkimpv(stockPrice, strikePrice, intRate, expTime, optionPrice, [], [], optionClass);
+        
+        % implied volatility
+        volt = blsimpv(stockPrice, strikePrice, intRate, expTime, optionPrice, [], [], [], optionClass);
         if (isnan(volt))
-            if (i>1)
-                volt = lastVolt;
-            else
-                volt = calcBSImpVol(optionType, optionPrice, stockPrice, strikePrice, expTime, intRate, 0.05);
-            end
+             volt = 0;
         end
-        lastVolt = volt;
         voltValues(i,j) = volt;
-        sigmaValues = calcVolatility(prices(i:nTrain+i, i));
         
-        % get some parameters of the model
-        vegaValues(i,j) = blsvega(stockPrice, strikePrice, intRate, expTime, volt);
-        gammaValues(i,j) = blsgamma(stockPrice, strikePrice, intRate, expTime, volt);
-        deltaValues(i,j) = blsdelta(stockPrice, strikePrice, intRate, expTime, volt);
-        
-        % apply the model to get the option price
-        [pCall, pPut] = blsprice(stockPrice, strikePrice, intRate, expTime, volt);
-        if (j <= 5)
-            estmPrices(i,j) = pCall;
-        else
-            estmPrices(i,j) = pPut;
-        end
+        % volatility, this is different than the implied volatility
+        pr = prices(idxCurrent-nTrain:idxCurrent-1, j);
+        sigma = calcVolatility(pr);
+        sigmaValues(i,j) = sigma;
     end
     
+end
+
+voltValues_ = [];
+sigmaValues_ = [];
+dates_ = [];
+for i=1:nTest
+    v = voltValues(i,:);
+    if (isempty(v(v==0)))
+        voltValues_ = [voltValues_; v];
+        sigmaValues_ = [sigmaValues_; sigmaValues(i,:)];
+        dates_ = [dates_ dates(i,:)];
+    end
 end
 
 

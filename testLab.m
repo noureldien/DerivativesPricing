@@ -4,8 +4,3 @@
 
 clc;
 
-max(max(sigmaValues))
-min(min(sigmaValues))
-
-
-

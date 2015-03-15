@@ -110,7 +110,8 @@ c = c(:,:,ones(1,14)); % Repmat to 3d size 14
 % Rational Function -  Eqn(19) of Li 2006
 fcnv = @(p,m,n,i,j,x,c)(p(1).*x(:,:,1) + p(2).*sqrt(c(:,:,1)) + p(3).*c(:,:,1) + (sum(n.*((x.^i).*(sqrt(c).^j)),3))./(1 + sum(m.*((x.^i).*(sqrt(c).^j)),3)));
 v1 = fcnv(p,m,n,i,j,x,c); % D- Domain (x<=-1)
-v2 = fcnv(p,m,n,i,j,-x,exp(x).*c + 1 -exp(x)); % Reflection for D+ Domain (x>1)
+%v2 = fcnv(p,m,n,i,j,-x,exp(x).*c + 1 -exp(x)); % Reflection for D+ Domain (x>1)
+v2 = fcnv(p,m,n,i,j,-x,max(exp(x).*c + 1 -exp(x),0));
 v = zeros(g,h); v(x(:,:,1)<=0)=v1(x(:,:,1)<=0); v(x(:,:,1)>0)=v2(x(:,:,1)>0);
 
 % Domain-of-Approximation is x={-0.5,+0.5},v={0,1},x/v={-2,2}
@@ -128,7 +129,10 @@ if any(~domainFilter(:) & ~isnan(P(:))) % any out-of-Li domain values
     % ITM Regression
     Y = sigma(:); X = [T(:),K(:)];
     X(isnan(Y) | M(:)<1,:) = []; Y(isnan(Y) | M(:)<1) = [];
+    try
     B = [ones(size(X,1),1),X]\Y;
+    catch
+    end
     sigma_reg = [ones(size(T(:),1),1), T(:),K(:)]*B;
     sigma_reg = reshape(sigma_reg,g,h);
     sigma(~isnan(P) & M>=1 & ~domainFilter) = sigma_reg(~isnan(P) & M>=1 & ~domainFilter);
@@ -190,8 +194,9 @@ end
 function p=fcnN(x)
 try
 p=0.5*(1.+erf(x./sqrt(2)));
-catch Me
-    disp(Me);
+catch
+    x = real(x);
+    p=0.5*(1.+erf(x./sqrt(2)));
 end
 end
 %
