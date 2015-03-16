@@ -5,36 +5,39 @@
 clc;
 
 %% plot the estimated option prices
-%
 % actualPrices = prices(nTrain+1: nTrain+nTest,:);
 % timeValues = dates(nTrain+1: nTrain+nTest);
-% for i=1:m
-%     figure(i);clf;
-%     hold on;
-%     grid on;
-%     box on;
-%     axis tight;
+% figure(2);clf;
+% hold on;
+% grid on;
+% box on;
+% axis tight;
+% for i=1:m/2
+% for i=1+(m/2):m
 %     plot(timeValues, estmPrices(:,i), 'b');
 %     plot(timeValues, actualPrices(:,i), 'r');
-%     title('Black-Scholes estmations for Option Prices', 'FontSize', 18);
-%     xlabel('Date (day/month)', 'FontSize', 18);
-%     ylabel('Option Price', 'FontSize', 18);
-%     plot_legend = legend ('Estimated', 'Actual');
-%     set(plot_legend, 'FontSize', 14);
-%     datetick('x','dd/mm','keeplimits');
 % end
+% title('Black-Scholes estmations for Option Prices', 'FontSize', 18);
+% xlabel('Date (day/month)', 'FontSize', 18);
+% ylabel('Option Price', 'FontSize', 18);
+% plot_legend = legend ('Estimated', 'Actual');
+% set(plot_legend, 'FontSize', 14);
+% datetick('x','dd/mm','keeplimits');
 
 %% plot the error between actual and estimated price
+% colorMaps = lines(10);
 % actualPrices = prices(nTrain+1: nTrain+nTest,:);
 % timeValues = dates(nTrain+1: nTrain+nTest);
-% errors = abs(actualPrices - estmPrices);
+% errors = actualPrices - estmPrices;
 % figure(1);clf;
 % subplot(1, 2, 1);
 % hold on;
 % grid on;
 % box on;
 % axis tight;
-% plot(timeValues, errors(:,1:m/2), 'Color', 'r');
+% for i=1:m/2
+%     plot(timeValues, errors(:,i), 'Color', colorMaps(i,:));
+% end
 % title('Pricing Errors (Call)', 'FontSize', 16);
 % xlabel('Date (day/month)', 'FontSize', 16);
 % ylabel('Option Price', 'FontSize', 16);
@@ -43,7 +46,9 @@ clc;
 % grid on;
 % box on;
 % axis tight;
-% plot(timeValues, errors(:,1+(m/2):m), 'Color', 'b');
+% for i=1+(m/2):m
+%     plot(timeValues, errors(:,i), 'Color', colorMaps(i-(m/2),:));
+% end
 % title('Pricing Errors (Put)', 'FontSize', 16);
 % xlabel('Date (day/month)', 'FontSize', 16);
 % ylabel('Option Price', 'FontSize', 16);

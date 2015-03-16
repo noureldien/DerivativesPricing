@@ -89,14 +89,21 @@ end
 voltValues_ = [];
 sigmaValues_ = [];
 dates_ = [];
+stock_ = [];
 for i=1:nTest
     v = voltValues(i,:);
     if (isempty(v(v==0)))
         voltValues_ = [voltValues_; v];
         sigmaValues_ = [sigmaValues_; sigmaValues(i,:)];
-        dates_ = [dates_ dates(i,:)];
+        dates_ = [dates_; dates(i,:)];
+        stock_ = [stock_; stock(i)];
     end
 end
+
+
+
+
+
 
 
 
