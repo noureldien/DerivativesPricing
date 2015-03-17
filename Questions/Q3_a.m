@@ -34,14 +34,13 @@ nTest = n-nTrain - neglectedDays;
 nSamples = 150;
 testIdx = int16(randperm(nTest, nSamples)) + nTrain;
 testIdx = sort(testIdx);
-nTest = nSamples;
 
 voltValues = zeros(nTest,m);
 sigmaValues = zeros(nTest,m);
 
 % loop on the test data. for each one, calcuate the volatility
 % from train data and estimate the call price and save it
-for i=1:nTest
+for i=1:nSamples
     
     idxCurrent = testIdx(i);
     
@@ -86,11 +85,12 @@ for i=1:nTest
     
 end
 
+% this is to choose the days whose volatilites are not zero
 voltValues_ = [];
 sigmaValues_ = [];
 dates_ = [];
 stock_ = [];
-for i=1:nTest
+for i=1:nSamples
     v = voltValues(i,:);
     if (isempty(v(v==0)))
         voltValues_ = [voltValues_; v];
